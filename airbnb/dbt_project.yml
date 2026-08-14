@@ -31,4 +31,11 @@ clean-targets:         # directories to be removed by `dbt clean`
 # files using the `{{ config(...) }}` macro.
 models:
   airbnb:
-   
+   # we now making sure that everything in this project defaults to materialized view
+   +materialized: view
+   # for dim tables in the dim folder we are going to be deafult to tables
+   dim:
+    +materialized: table
+   src:
+   # every model here will be converted to cte and will not be rcreated as views
+   +materialized: ephemeral 
