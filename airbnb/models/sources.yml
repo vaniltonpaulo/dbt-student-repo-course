@@ -1,0 +1,38 @@
+sources:
+  - name: airbnb
+    schema: raw
+    tables:
+      - name: listings
+        identifier: raw_listings
+
+      - name: hosts
+        identifier: raw_hosts
+
+      - name: reviews
+        identifier: raw_reviews
+
+        # Freshness testing helps detect when source data stops updating,
+        # preventing dbt from processing stale data and dashboards
+        # from showing outdated information.
+        #
+        # Imagine Airbnb is supposed to send new review data regularly.
+        # The dbt transformations might work perfectly, but the upstream
+        # data pipeline could have stopped.
+        #
+        # Without freshness testing:
+        #
+        # Airbnb source stopped updating
+        #       ↓
+        # dbt transformations still run
+        #       ↓
+        # Dashboards show old data
+        #       ↓
+        # Nobody realizes the data is stale ❌
+
+        config:
+          loaded_at_field: date
+          freshness:
+            warn_after: {count: 1, period: hour}
+            error_after: {count: 24, period: hour}
+
+# Run: dbt source freshness

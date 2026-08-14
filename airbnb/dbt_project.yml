@@ -38,4 +38,26 @@ models:
     +materialized: table
    src:
    # every model here will be converted to cte and will not be rcreated as views
-   +materialized: ephemeral 
+    +materialized: ephemeral 
+
+
+  # So the hierarchy is:
+#
+# airbnb
+# ├── default → view
+# ├── dim     → table
+# └── src     → ephemeral
+#
+# That means:
+#
+# models/dim/dim_listings_cleansed.sql
+# → TABLE
+#
+# models/src/src_listings.sql
+# → EPHEMERAL
+#
+# models/src/src_reviews.sql
+# → EPHEMERAL
+#
+# Ephemeral models will not be created as physical
+# views/tables in Snowflake.
