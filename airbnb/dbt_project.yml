@@ -61,3 +61,10 @@ models:
 #
 # Ephemeral models will not be created as physical
 # views/tables in Snowflake.
+
+
+
+#DBT will collect every test failure and store it in the database.
+data_tests:
+  +store_failures: true
+  # execute dbt test after

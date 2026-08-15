@@ -1,0 +1,35 @@
+#Think of it as:
+#"If I give my model these specific rows, does my SQL logic produce these specific results?"
+# Unit test to verify the logic of the mart_fullmoon_reviews model.
+# Instead of using real data, we provide predefined fake input data.
+
+unit_tests:
+  - name: unittest_fullmoon_matcher
+    model: mart_fullmoon_reviews
+
+    # GIVEN: Fake input data that the model will use during the test.
+    given:
+      # Simulate three reviews occurring on consecutive dates.
+      - input: ref('fct_reviews')
+        rows:
+          - {review_date: '2025-01-13'}
+          - {review_date: '2025-01-14'}
+          - {review_date: '2025-01-15'}
+
+      # Simulate a known full moon occurring on January 14.
+      - input: ref('seed_full_moon_dates')
+        rows:
+          - {full_moon_date: '2025-01-14'}
+
+    # EXPECT: Define exactly what the model should return
+    # when processing the fake input data above.
+    # In this model, the day after the full moon is classified as "full moon".
+    expect:
+      rows:
+        - {review_date: '2025-01-13', is_full_moon: "not full moon"}
+        - {review_date: '2025-01-14', is_full_moon: "not full moon"}
+        - {review_date: '2025-01-15', is_full_moon: "full moon"}
+
+    # to run it:
+   # option 1: dbt test -s mart_fullmoon_reviews
+   # or dbt test -s 
