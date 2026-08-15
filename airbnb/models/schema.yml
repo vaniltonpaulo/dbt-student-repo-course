@@ -1,44 +1,76 @@
 models:
   - name: dim_listings_cleansed # this test for for specific columns of the table dim_listings_cleansed
+    #This is a model level test.
+    data_tests:
+      - minimum_row_count:
+          arguments:
+            min_row_count: 1000
+        #severity: warn or you can just put by default in the test
     columns:
 
-     - name: listing_id
-       data_tests:
-         - unique
-         - not_null
-
-     - name: host_id
-       data_tests:
-         - not_null
-         - relationships:
-             arguments:
-               to: ref('dim_hosts_cleansed')
-               field: host_id
-
-     - name: room_type
-       data_tests:
-         - accepted_values:
-             arguments:
-               values: ['Entire home/apt',
-                        'Private room',
-                        'Shared room',
-                        'Hotel room']
-        #then you have to hit dbt test
-  - name: dim_hosts_cleansed
-    columns:
-      - name: host_id
-        data_tests: 
+      - name: listing_id
+        data_tests:
           - unique
           - not_null
-      
-      - name: host_name
+
+      - name: host_id
         data_tests:
           - not_null
-      - name: is_superhost
+          - relationships:
+              arguments:
+                to: ref('dim_hosts_cleansed')
+                field: host_id
+
+      - name: room_type
         data_tests:
-         - accepted_values:
-            arguments:
-            values: ['t','f']
+          - accepted_values:
+              arguments:
+                values: ['Entire home/apt',
+                         'Private room',
+                         'Shared room',
+                         'Hotel room']
+
+      - name: minimum_nights
+        data_tests:
+          - positive_values
+
+        # then you have to hit dbt test
+
+
+  - name: dim_hosts_cleansed
+
+    # This is a data contract
+    config:
+      contract:
+        enforced: true
+
+    columns:
+      - name: host_id
+        data_type: integer
+        constraints:
+         - type: not_null
+        data_tests:
+          - unique
+
+      - name: host_name
+        data_type: string
+        data_tests:
+          - not_null
+
+      - name: is_superhost
+        data_type: string
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['t', 'f']
+
+      - name: updated_at
+        data_type: timestamp
+
+      - name: created_at
+        data_type: timestamp
+
+
   - name: fct_reviews
     columns:
 
@@ -59,4 +91,3 @@ models:
           - accepted_values:
               arguments:
                 values: ['positive', 'negative', 'neutral']
-
